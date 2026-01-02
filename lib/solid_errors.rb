@@ -15,6 +15,18 @@ module SolidErrors
   mattr_accessor :email_to
   mattr_accessor :email_subject_prefix
   mattr_accessor :destroy_after
+  # Email notification configuration
+  # email_milestone_counts: nil (default, emails all occurrences), [] (no count-based emails), [1,10,100] (email at these counts)
+  # email_rate_threshold_count: number of occurrences within time window to trigger email
+  # email_rate_threshold_window: time window in seconds for rate threshold
+  mattr_accessor :email_milestone_counts, default: nil
+  mattr_accessor :email_rate_threshold_count, default: nil
+  mattr_accessor :email_rate_threshold_window, default: nil
+  # Lifecycle event email configuration
+  # email_on_resolved: send email when error is marked as resolved
+  # email_on_reopened: send email when resolved error is reopened
+  mattr_accessor :email_on_resolved, default: false
+  mattr_accessor :email_on_reopened, default: false
 
   class << self
     # use method instead of attr_accessor to ensure

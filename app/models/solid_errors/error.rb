@@ -30,6 +30,8 @@ module SolidErrors
     scope :resolved, -> { where.not(resolved_at: nil) }
     scope :unresolved, -> { where(resolved_at: nil) }
 
+    after_update_commit :send_lifecycle_email, if: :saved_change_to_resolved_at?
+
     def severity_emoji
       SEVERITY_TO_EMOJI[severity.to_sym]
     end
@@ -52,6 +54,30 @@ module SolidErrors
 
     def resolved?
       resolved_at.present?
+    end
+
+    private
+
+    def send_lifecycle_email
+      return unless SolidErrors.send_emails?
+
+      if was_resolved? && !resolved?
+        # Error was reopened
+        send_lifecycle_occurrence_email(:reopened) if SolidErrors.email_on_reopened
+      elsif !was_resolved? && resolved?
+        # Error was resolved
+        send_lifecycle_occurrence_email(:resolved) if SolidErrors.email_on_resolved
+      end
+    end
+
+    def was_resolved?
+      resolved_at_before_last_save.present?
+    end
+
+    def send_lifecycle_occurrence_email(trigger)
+      # Reuse the existing error_occurred email but with a trigger parameter
+      occurrence = occurrences.last || occurrences.new
+      ErrorMailer.error_occurred(occurrence, trigger: trigger).deliver_later
     end
   end
 end
