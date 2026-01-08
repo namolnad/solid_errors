@@ -110,7 +110,7 @@
   <div class="email-header">
     <h1>
       <%= @error.severity_emoji %>
-      <a href="<%= occurrence_url %>"><%= @error.exception_class %></a>
+      <%= @error.exception_class %>
       from <em><%= @error.source %></em>
     </h1>
     <a href="<%= occurrence_url %>" class="email-link">View in Solid Errors &rarr;</a>
