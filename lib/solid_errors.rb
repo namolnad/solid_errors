@@ -15,7 +15,7 @@ module SolidErrors
   mattr_accessor :email_to
   mattr_accessor :email_subject_prefix
   mattr_accessor :destroy_after
-  mattr_writer :url_helper_name
+  mattr_writer :url_helper_name, :url_options
 
   class << self
     # use method instead of attr_accessor to ensure
@@ -38,12 +38,25 @@ module SolidErrors
       @url_helper_name ||= detect_url_helper_name
     end
 
-    def detect_url_helper_name
-      route_name = Rails.application.routes.named_routes.find do |name, _route|
-        name.to_s.end_with?('solid_errors')
-      end&.first
+    def url_options
+      @url_options ||= detect_url_options
+    end
 
-      route_name&.to_sym || :solid_errors # Fallback to default if not found
+    private
+
+    def find_solid_errors_route
+      @solid_errors_route ||= Rails.application.routes.routes.find do |r|
+        r.name&.to_s&.end_with?("solid_errors")
+      end
+    end
+
+    def detect_url_helper_name
+      find_solid_errors_route&.name&.to_sym || :solid_errors
+    end
+
+    def detect_url_options
+      subdomain = find_solid_errors_route&.constraints&.dig(:subdomain)
+      subdomain.is_a?(String) ? { subdomain: subdomain } : {}
     end
   end
 end
