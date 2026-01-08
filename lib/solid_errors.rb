@@ -15,6 +15,7 @@ module SolidErrors
   mattr_accessor :email_to
   mattr_accessor :email_subject_prefix
   mattr_accessor :destroy_after
+  mattr_writer :url_helper_name
 
   class << self
     # use method instead of attr_accessor to ensure
@@ -31,6 +32,18 @@ module SolidErrors
 
     def send_emails?
       send_emails && email_to.present?
+    end
+
+    def url_helper_name
+      @url_helper_name ||= detect_url_helper_name
+    end
+
+    def detect_url_helper_name
+      route_name = Rails.application.routes.named_routes.find do |name, _route|
+        name.to_s.end_with?('solid_errors')
+      end&.first
+
+      route_name&.to_sym || :solid_errors # Fallback to default if not found
     end
   end
 end

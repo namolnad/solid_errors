@@ -1,4 +1,4 @@
-<% occurrence_url = solid_errors.error_url(@error, anchor: "occurrence_#{@occurrence.id}") %>
+<% occurrence_url = public_send(SolidErrors.url_helper_name).error_url(@error, anchor: "occurrence_#{@occurrence.id}") %>
 <%= @error.severity_emoji %> <%= @error.exception_class %> from <%= @error.source %>
 ================================================================================
 
