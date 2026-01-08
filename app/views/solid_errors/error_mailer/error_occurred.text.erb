@@ -10,7 +10,7 @@ DETAILS
 --------------------------------------------------------------------------------
 Severity:     <%= @error.severity_emoji %> <%= @error.severity %>
 Status:       <%= @error.status_emoji %> <%= @error.status %>
-Occurred at:  <%= @occurrence.created_at.strftime("%Y-%m-%d %H:%M:%S %Z") %> (<%= time_ago_in_words(@occurrence.created_at) %> ago)
+Occurred at:  <%= @occurrence.created_at.strftime("%Y-%m-%d %H:%M:%S %Z") %>
 
 <% if @occurrence.context&.any? %>
 CONTEXT
